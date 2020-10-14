@@ -134,6 +134,7 @@ class ValueFunction:
 
         # weight for each tile
         # 每个瓦片的权重
+        # 这个不知道是不是瓦片的数量
         self.weights = np.zeros(max_size)
 
         # position and velocity needs scaling to satisfy the tile software
@@ -196,6 +197,7 @@ def get_action(position, velocity, value_function):
 # @valueFunction: state value function to learn
 # @n: # of steps
 # 返回结束一幕所用的时间
+# 最后得到了就是学习过后的权重
 def semi_gradient_n_step_sarsa(value_function, n=1):
     # start at a random position around the bottom of the valley
     # 书上说的，在[-0.6 -0.4]随机位置
@@ -303,6 +305,7 @@ def figure_10_1():
     alpha = 0.3
     value_function = ValueFunction(alpha, num_of_tilings)
     for ep in tqdm(range(episodes)):
+        # 这个就是n步半梯度sarsa，最后得到了就是学习过后的权重
         semi_gradient_n_step_sarsa(value_function)
         # 把上面说的1 100 9000幕的数据进行显示
         if ep in plot_episodes:
@@ -378,6 +381,7 @@ def figure_10_4():
     for run in range(runs):
         for n_step_index, n_step in enumerate(n_steps):
             for alpha_index, alpha in enumerate(alphas):
+                # 这个就是图上的省略部分
                 if (n_step == 8 and alpha > 1) or \
                         (n_step == 16 and alpha > 0.75):
                     # In these cases it won't converge, so ignore them
@@ -402,10 +406,10 @@ def figure_10_4():
     plt.close()
 
 if __name__ == '__main__':
-    figure_10_1()
+    # figure_10_1()
     # figure_10_2()
     # figure_10_3()
-    # figure_10_4()
+     figure_10_4()
 
 
 

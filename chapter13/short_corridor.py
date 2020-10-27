@@ -159,21 +159,26 @@ class ReinforceBaselineAgent(ReinforceAgent):
 
         # learn theta
         G = np.zeros(len(self.rewards))
+        # 从最后一个进行计算
         G[-1] = self.rewards[-1]
 
         for i in range(2, len(G) + 1):
+            # 然后进行循环，到达最开始
             G[-i] = self.gamma * G[-i + 1] + self.rewards[-i]
 
         gamma_pow = 1
-
+        # 遍历整幕数据
         for i in range(len(G)):
+            # 这个就是P326中的更新w
             self.w += self.alpha_w * gamma_pow * (G[i] - self.w)
 
+            # 得到动作
             j = 1 if self.actions[i] else 0
+            # 这个函数的作用就是得到策略pi
             pmf = self.get_pi()
             grad_ln_pi = self.x[:, j] - np.dot(self.x, pmf)
             update = self.alpha * gamma_pow * (G[i] - self.w) * grad_ln_pi
-
+            # 这个就是更新theta
             self.theta += update
             gamma_pow *= self.gamma
 
@@ -205,6 +210,7 @@ def trial(num_episodes, agent_generator):
             if episode_end:
                 # 如果这一幕已经结束了，那么我们要做的就是对这一幕的策略进行学习得到最新的策略theta
                 agent.episode_end(reward)
+                # 跳出本次循环
                 break
         # 注意这里的rewards与agent中rewards是不一样的，这里的记录的是这一幕的回报，而agent中rewards记录的是每一个状态的回报
         rewards[episode_idx] = rewards_sum
@@ -295,6 +301,7 @@ def figure_13_2():
 
     plt.plot(np.arange(num_episodes) + 1, -11.6 * np.ones(num_episodes), ls='dashed', color='red', label='-11.6')
     for i, label in enumerate(labels):
+        # 这里就取平均值（是对num_trials求平均值）
         plt.plot(np.arange(num_episodes) + 1, rewards[i].mean(axis=0), label=label)
     plt.ylabel('total reward on episode')
     plt.xlabel('episode')
@@ -305,5 +312,5 @@ def figure_13_2():
 
 if __name__ == '__main__':
     example_13_1()
-    figure_13_1()
-    # figure_13_2()
+    # figure_13_1()
+    figure_13_2()
